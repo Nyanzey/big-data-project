@@ -1,2 +1,3 @@
 input/
 models/
+__pycache__/

@@ -22,7 +22,7 @@ def idx_to_text(i):
     return cats[i]
 
 # Extract person segments from frames based on bounding box information
-def extract_person_segments(video_path, json_path, threshold=0.5):
+def extract_person_segments(video_path, json_path, threshold=0.1):
     with open(json_path, "r") as file:
         video_data = json.load(file)
     
@@ -71,6 +71,9 @@ def visualize_predictions(image, outputs, threshold=0):
     plot_results(image, probas[keep], bboxes_scaled)
 
 def plot_results(pil_img, prob, boxes):
+    print(boxes.tolist())
+    if (not boxes.tolist() or not boxes.tolist()[0]):
+        return
     plt.figure(figsize=(16, 10))
     plt.imshow(pil_img)
     ax = plt.gca()
@@ -100,7 +103,7 @@ def rescale_bboxes(out_bbox, size):
     return b
 
 # Path to your JSON file and video file
-video_path = "./input/VIRAT_S_000200_03_000657_000899.mp4"
+video_path = "./input/VIRAT_S_000205_01_000197_000342.mp4"
 json_path = "video_data_yolo.json"
 
 # Run the segmentation extraction

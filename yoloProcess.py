@@ -3,13 +3,13 @@ import json
 import os
 from datetime import datetime
 from ultralytics import YOLO
+import sampleFrames as sampler
 
 # Load the YOLO model
 model = YOLO("./models/yolo11x.pt")  # Replace with the path to your YOLO model if custom
 
-def process_video(video_path, output_data, frame_interval):
+def process_video(video_path, output_data, frame_indices):
     cap = cv2.VideoCapture(video_path)
-    frame_index = 0
     fps = cap.get(cv2.CAP_PROP_FPS)
     
     video_data = {
@@ -18,13 +18,12 @@ def process_video(video_path, output_data, frame_interval):
         "frames": []
     }
     
-    while cap.isOpened():
+    for frame_index in frame_indices:
+        cap.set(cv2.CAP_PROP_POS_FRAMES, frame_index)
         ret, frame = cap.read()
-        if not ret:
-            break
-        
+
         # Only process every `frame_interval` frames
-        if frame_index % frame_interval == 0:
+        if ret:
             timestamp = frame_index / fps  # Calculate timestamp in seconds
             
             # YOLO detection on the current frame with verbose=False to suppress output
@@ -48,8 +47,6 @@ def process_video(video_path, output_data, frame_interval):
             
             if (frame_data["detections"]):
                 video_data["frames"].append(frame_data)
-        
-        frame_index += 1  # Increment frame count
 
     cap.release()
     output_data["videos"].append(video_data)
@@ -89,14 +86,9 @@ def main(video_paths):
     # Process each video in the provided list
     for video_path in video_paths:
         print(f"Processing video: {video_path}")
-        cap = cv2.VideoCapture(video_path)
-        fps = cap.get(cv2.CAP_PROP_FPS)  # Frames per second
-        video_length = cap.get(cv2.CAP_PROP_FRAME_COUNT) / fps  # Video length in seconds
-
-        frames_per_video = 100
-        frame_interval = int(fps*(video_length/frames_per_video))
-
-        process_video(video_path, output_data, frame_interval)
+        
+        frames = sampler.get_frames(video_path, similarity_threshold=0.99, show=False)
+        process_video(video_path, output_data, frames)
 
     # Save output to JSON
     save_to_json(output_data)
@@ -105,7 +97,8 @@ if __name__ == "__main__":
     # List of video paths to process
     video_paths = [
         "./input/VIRAT_S_000200_03_000657_000899.mp4",
-        "./input/VIRAT_S_000200_00_000100_000171.mp4"
+        "./input/VIRAT_S_000200_00_000100_000171.mp4",
+        "./input/VIRAT_S_000205_01_000197_000342.mp4"
     ]
 
     output_file="video_data_yolo.json"
