@@ -7,12 +7,10 @@ from datetime import datetime
 
 # --------------------------------------- YOLO Process ---------------------------------------
 
-# List of video paths to process
-video_paths = [
-    "./input/VIRAT_S_000200_03_000657_000899.mp4",
-    "./input/VIRAT_S_000200_00_000100_000171.mp4",
-    "./input/VIRAT_S_000205_01_000197_000342.mp4"
-]
+INPUT_DIR = './input/'
+
+video_paths = [INPUT_DIR+f for f in os.listdir(INPUT_DIR) if os.path.isfile(os.path.join(INPUT_DIR, f))]
+print(video_paths)
 
 output_file="video_data_yolo.json"
 
