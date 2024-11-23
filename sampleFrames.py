@@ -76,5 +76,4 @@ def get_frames(video_path, sampling_interval=1, similarity_threshold=0.98, k_clu
                 img.show()
                 input('Press Enter to continue')
 
-    print(f'Extracted {len(frame_indices)} keyframes from {video_path}.')
     return frame_indices

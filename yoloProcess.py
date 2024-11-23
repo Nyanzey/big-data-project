@@ -54,7 +54,7 @@ def process_video(video_path, output_data, frame_indices):
     cap.release()
     output_data["videos"].append(video_data)
 
-def save_to_json(output_data, output_file="video_data_yolo.json"):
+def save_to_json(output_data, output_file="video_data.json"):
     # Use lazy loading for the JSON file if it exists
     existing_data = {"videos": []}
 
@@ -78,3 +78,5 @@ def save_to_json(output_data, output_file="video_data_yolo.json"):
     # Save data back to file
     with open(output_file, "w") as f:
         json.dump(existing_data, f, indent=4)
+
+    return existing_data

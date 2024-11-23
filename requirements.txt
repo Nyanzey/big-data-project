@@ -1,15 +1,5 @@
 opencv-python
 scikit-learn
-numpy
-webcolors
-matplotlib
-torch
-Pillow
-transformers
-torchvision
-scipy
-opencv-python
-scikit-learn
 numpy==1.26.4
 webcolors
 matplotlib
