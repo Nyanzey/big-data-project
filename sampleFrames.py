@@ -17,9 +17,24 @@ def extract_frame_features(frame):
         outputs = model(**inputs)
     return outputs.image_embeds[0].cpu().numpy()  # Convert to numpy and move to CPU
 
-def sample_video_frames(video_path, sampling_interval):
+def sample_video_frames(video_path, sampling_interval, k_clusters):
     cap = cv2.VideoCapture(video_path)
+
+    if not cap.isOpened():
+        raise FileNotFoundError(f"Cannot open video file: {video_path}")
+
     fps = cap.get(cv2.CAP_PROP_FPS)
+
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    print(total_frames)
+    max_sampled_frames = total_frames // (fps * sampling_interval)
+    print(max_sampled_frames)
+    if max_sampled_frames < k_clusters:
+        new_interval = total_frames / (fps * (k_clusters + 2))
+        if new_interval < (1 / fps):
+            raise ValueError(f"Video too short: Cannot extract {k_clusters} frames.")
+        sampling_interval = new_interval
+
     interval_frames = int(fps * sampling_interval)
 
     frame_idx = 0
@@ -59,8 +74,8 @@ def cluster_and_select_keyframes(frames, seconds, k_clusters, similarity_thresho
                 keyframes.append({seconds[representative_idx]: frames[representative_idx]})
     return keyframes
 
-def get_frames(video_path, sampling_interval=1, similarity_threshold=0.98, k_clusters=5, show=True):
-    frames, frame_seconds = sample_video_frames(video_path, sampling_interval)
+def get_frames(video_path, sampling_interval=1, similarity_threshold=0.98, k_clusters=5, show=False):
+    frames, frame_seconds = sample_video_frames(video_path, sampling_interval, k_clusters)
     keyframes = cluster_and_select_keyframes(frames, frame_seconds, k_clusters, similarity_threshold)
 
     cap = cv2.VideoCapture(video_path)
