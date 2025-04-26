@@ -1,6 +1,6 @@
-import yoloProcess as yolop
-import colorProcess as colorp
-import sampleFrames as sampler
+import detection.yoloProcess as yolop
+import detection.colorProcess as colorp
+import detection.sampleFrames as sampler
 import os, json
 from datetime import datetime
 
@@ -30,8 +30,7 @@ def get_detections(video_paths):
     for video_path in new_videos:
         frames = sampler.get_frames(video_path, similarity_threshold=0.99, sampling_interval=1, show=False)
         yolop.process_video(video_path, output_data, frames)
-        # personp.extract_person_segments(video_path, output_data) too heavy for cluster
         colorp.process_videos_with_colors(output_data, ['person', 'car', 'truck', 'bus', 'boat', 'train', 'bench'])
         
     # Save output to JSON
-    return yolop.save_to_json(output_data, output_file=output_file)
+    return output_data

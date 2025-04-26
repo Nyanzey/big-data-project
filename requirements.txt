@@ -17,3 +17,5 @@ ultralytics-thop==2.0.12
 seaborn==0.13.2
 tzdata
 ultralytics
+flask
+requests

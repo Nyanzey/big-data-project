@@ -3,7 +3,7 @@ import json
 import os
 from datetime import datetime
 from ultralytics import YOLO
-import sampleFrames as sampler
+import detection.sampleFrames as sampler
 
 # Load the YOLO model
 model = YOLO("./models/yolo11x.pt")  # Replace with the path to your YOLO model if custom

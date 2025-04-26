@@ -26,9 +26,9 @@ def sample_video_frames(video_path, sampling_interval, k_clusters):
     fps = cap.get(cv2.CAP_PROP_FPS)
 
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    print(total_frames)
+    print(f'Total frames: {total_frames}')
     max_sampled_frames = total_frames // (fps * sampling_interval)
-    print(max_sampled_frames)
+    print(f'Sampled frames: {max_sampled_frames}')
     if max_sampled_frames < k_clusters:
         new_interval = total_frames / (fps * (k_clusters + 2))
         if new_interval < (1 / fps):
