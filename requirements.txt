@@ -9,9 +9,9 @@ transformers
 torchvision
 scipy
 boto3
-python-dateutil==2.8.1
+python-dateutil
 psutil
-pandas==1.5.3
+pandas
 py-cpuinfo
 ultralytics-thop==2.0.12
 seaborn==0.13.2
