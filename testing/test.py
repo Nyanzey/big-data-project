@@ -3,12 +3,12 @@
 import requests
 
 # URL of your Flask API
-API_URL = "http://127.0.0.1:5000/process_videos"
+API_URL = "http://127.0.0.1:5001/process_videos"
 
 # Example payload with a list of video paths
 payload = {
     "video_paths": [
-        "videos/test.mp4"
+        "2.8.mp4"
     ]
 }
 

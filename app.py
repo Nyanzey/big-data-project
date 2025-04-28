@@ -3,16 +3,18 @@ import requests
 import boto3
 import os
 import tempfile
-from detection.detect import get_detections
+#from detection.detect import get_detections
 
 app = Flask(__name__)
 
 # Set the URL of the other container (destination)
-DESTINATION_URL = "http://metadata-service:5000/"
+webui_host = os.getenv("WEBUI_SERVICE_HOST", "webui-service")
+webui_port = os.getenv("WEBUI_SERVICE_PORT", "5000")
+DESTINATION_URL = f"http://{webui_host}:{webui_port}/receive_metadata"
 
 # Get settings from environment variables
-os.environ['AWS_ACCESS_KEY_ID'] = ''
-os.environ['AWS_SECRET_ACCESS_KEY'] = ''
+os.environ['AWS_ACCESS_KEY_ID'] = os.getenv("AWS_ACCESS_KEY_ID", "")
+os.environ['AWS_SECRET_ACCESS_KEY'] = os.getenv("AWS_SECRET_ACCESS_KEY", "")
 AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
 AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "surv-cloud-videos")
 
@@ -42,9 +44,10 @@ def process_videos():
     try:
         # Download videos from S3
         local_video_paths = download_from_s3(video_keys)
+        print("Downloaded video files:", local_video_paths)
 
         # Call your detection function
-        metadata = get_detections(local_video_paths)
+        metadata = {"data": []}
         print("Metadata:", metadata)
 
         # Send the metadata to the destination container
@@ -67,6 +70,3 @@ def process_videos():
 @app.route('/health', methods=['GET'])
 def health():
     return "OK", 200
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001)
