@@ -8,11 +8,11 @@ from detection.detect import get_detections
 app = Flask(__name__)
 
 # Set the URL of the other container (destination)
-DESTINATION_URL = "http://localhost:5001/receive_metadata"
+DESTINATION_URL = "http://inverted-index-service:5002/receive_metadata"
 
 # Get settings from environment variables
 AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
-AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "my-videos-bucket")
+AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "surv-cloud-videos")
 
 # Initialize S3 client
 s3_client = boto3.client("s3", region_name=AWS_REGION)
@@ -67,4 +67,4 @@ def health():
     return "OK", 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='processor-service', port=5001)
