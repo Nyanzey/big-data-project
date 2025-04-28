@@ -8,9 +8,11 @@ from detection.detect import get_detections
 app = Flask(__name__)
 
 # Set the URL of the other container (destination)
-DESTINATION_URL = "http://inverted-index-service:5002/receive_metadata"
+DESTINATION_URL = "http://metadata-service:5000/"
 
 # Get settings from environment variables
+os.environ['AWS_ACCESS_KEY_ID'] = ''
+os.environ['AWS_SECRET_ACCESS_KEY'] = ''
 AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
 AWS_S3_BUCKET = os.getenv("AWS_S3_BUCKET", "surv-cloud-videos")
 
@@ -67,4 +69,4 @@ def health():
     return "OK", 200
 
 if __name__ == '__main__':
-    app.run(host='processor-service', port=5001)
+    app.run(host='0.0.0.0', port=5001)
