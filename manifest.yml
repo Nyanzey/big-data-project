@@ -1,0 +1,96 @@
+# For webUI
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webui
+  template:
+    metadata:
+      labels:
+        app: webui
+    spec:
+      containers:
+        - name: webui
+          image: marcoguillen/videos-app
+          ports:
+            - containerPort: 5000
+          env:
+            - name: AWS_REGION
+              value: "us-east-1"
+            - name: AWS_S3_BUCKET
+              value: "surv-cloud-videos"
+            - name: AWS_ACCESS_KEY_ID
+              value: ""
+            - name: AWS_SECRET_ACCESS_KEY
+              value: ""
+            - name: PROCESSOR_SERVICE_HOST
+              value: "processor-service"
+            - name: PROCESSOR_SERVICE_PORT
+              value: "5000"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webui-service
+spec:
+  selector:
+    app: webui
+  ports:
+    - protocol: TCP
+      port: 5173
+      targetPort: 5173
+      nodePort: 30001   # <-- Custom node port
+  type: NodePort
+
+
+# For video processor
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video-processor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: video-processor
+  template:
+    metadata:
+      labels:
+        app: video-processor
+    spec:
+      containers:
+        - name: video-processor
+          image: nyanzey/procdummy:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: AWS_REGION
+              value: "us-east-1"
+            - name: AWS_S3_BUCKET
+              value: "surv-cloud-videos"
+            - name: AWS_ACCESS_KEY_ID
+              value: ""
+            - name: AWS_SECRET_ACCESS_KEY
+              value: ""
+            - name: WEBUI_SERVICE_HOST
+              value: "webui-service"
+            - name: WEBUI_SERVICE_PORT
+              value: "5173"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: processor-service
+spec:
+  selector:
+    app: video-processor
+  ports:
+    - protocol: TCP
+      port: 5001
+      targetPort: 5001
+  type: ClusterIP
