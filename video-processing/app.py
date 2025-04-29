@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 # Set the URL of the other container (destination)
 webui_host = os.getenv("WEBUI_SERVICE_HOST", "webui-service")
-webui_port = os.getenv("WEBUI_SERVICE_PORT", "5000")
+webui_port = os.getenv("WEBUI_SERVICE_PORT", "5173")
 DESTINATION_URL = f"http://{webui_host}:{webui_port}/receive_metadata"
 
 # Get settings from environment variables
@@ -34,12 +34,12 @@ def download_from_s3(video_keys):
 @app.route('/process_videos', methods=['POST'])
 def process_videos():
     data = request.get_json()
-    if not data or 'video_paths' not in data:
-        return jsonify({'error': 'Missing video_paths'}), 400
+    if not data or 'fileName' not in data:
+        return jsonify({'error': 'Missing file name'}), 400
 
-    video_keys = data['video_paths']  # These are S3 object keys
-    if not isinstance(video_keys, list):
-        return jsonify({'error': 'video_paths must be a list'}), 400
+    video_keys = data['fileName']  # These are S3 object keys
+    if not isinstance(video_keys, str):
+        return jsonify({'error': 'file name must be a string'}), 400
 
     try:
         # Download videos from S3
@@ -47,7 +47,8 @@ def process_videos():
         print("Downloaded video files:", local_video_paths)
 
         # Call your detection function
-        metadata = {"data": []}
+        print("local_video_paths:", local_video_paths)
+        metadata = {"data": []} # Replace with actual detection function call
         print("Metadata:", metadata)
 
         # Send the metadata to the destination container
@@ -65,8 +66,3 @@ def process_videos():
                 print(f"Failed to delete temp file {path}: {e}")
 
     return jsonify({'status': 'success', 'metadata_sent': metadata}), 200
-
-# Health check (optional)
-@app.route('/health', methods=['GET'])
-def health():
-    return "OK", 200

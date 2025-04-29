@@ -6,7 +6,6 @@ WORKDIR /app
 
 # Copy only the necessary files and folders
 COPY detection/ ./detection/
-COPY videos/ ./videos/
 COPY app.py .
 COPY requirements.txt .
 
@@ -17,12 +16,12 @@ RUN pip install -r requirements.txt
 RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 
 # Expose the port Flask will run on
-EXPOSE 5000
+EXPOSE 5001
 
 # Set environment variables to make Flask run properly
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
-ENV FLASK_RUN_PORT=5000
+ENV FLASK_RUN_PORT=5001
 
 # Run detect.py as the default command
 CMD ["flask", "run"]
