@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inverted-index
+spec:
+  replicas: 1  # NO ESCALAR
+  selector:
+    matchLabels:
+      app: inverted-index
+  template:
+    metadata:
+      labels:
+        app: inverted-index
+    spec:
+      containers:
+        - name: inverted-index
+          image: simondice16/metadata:latest
+          ports:
+            - containerPort: 5002

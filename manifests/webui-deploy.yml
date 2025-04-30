@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webui
+  template:
+    metadata:
+      labels:
+        app: webui
+    spec:
+      containers:
+        - name: webui
+          image: marcoguillen/videos-app
+          ports:
+            - containerPort: 5000
+          env:
+            - name: AWS_REGION
+              value: "us-east-1"
+            - name: AWS_S3_BUCKET
+              value: "surv-cloud-videos"
+            - name: AWS_ACCESS_KEY_ID
+              value: ""
+            - name: AWS_SECRET_ACCESS_KEY
+              value: ""
+            - name: PROCESSOR_SERVICE_HOST
+              value: "processor-service"
+            - name: PROCESSOR_SERVICE_PORT
+              value: "5000"

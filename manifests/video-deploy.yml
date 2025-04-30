@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: video-processor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: video-processor
+  template:
+    metadata:
+      labels:
+        app: video-processor
+    spec:
+      containers:
+        - name: video-processor
+          image: nyanzey/procdummy:latest
+          ports:
+            - containerPort: 5001
+          env:
+            - name: AWS_REGION
+              value: "us-east-1"
+            - name: AWS_S3_BUCKET
+              value: "surv-cloud-videos"
+            - name: AWS_ACCESS_KEY_ID
+              value: ""
+            - name: AWS_SECRET_ACCESS_KEY
+              value: ""
+            - name: WEBUI_SERVICE_HOST
+              value: "inverted-index-service"
+            - name: WEBUI_SERVICE_PORT
+              value: "5002"
