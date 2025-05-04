@@ -16,7 +16,7 @@ spec:
         - name: webui
           image: marcoguillen/videos-app
           ports:
-            - containerPort: 5000
+            - containerPort: 5137
           env:
             - name: AWS_REGION
               value: "us-east-1"
