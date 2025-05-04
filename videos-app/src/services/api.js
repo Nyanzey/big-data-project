@@ -4,6 +4,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const S3_BUCKET_NAME = import.meta.env.VITE_S3_BUCKET_NAME;
 const REGION = import.meta.env.VITE_AWS_REGION;
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const s3 = new S3Client({
     region: REGION,
@@ -13,9 +14,8 @@ const s3 = new S3Client({
     },
 });
 
-const API_URL = "http://processor-service:5001/process-videos";
-const INVERTED_INDEX_URL = "http://inverted-index-service:5002";
-const S3_BUCKET_URL = "http://my-s3-bucket-service";
+const API_URL = `${BASE_URL}/api/process-videos`;
+const INVERTED_INDEX_URL = `${BASE_URL}/api/index`;
 
 const fetchFromProcessor = async (videoTitle, videoFileName) => {
     try {
