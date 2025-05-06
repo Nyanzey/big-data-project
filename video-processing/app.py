@@ -4,6 +4,7 @@ import boto3
 import os
 import tempfile
 from detection.detect import get_detections
+import multiprocessing
 
 app = Flask(__name__)
 
@@ -28,6 +29,30 @@ def download_from_s3(video_key):
     temp_file.close()
     return temp_file.name
 
+def process_video_task(video_key):
+    local_video_path = None
+    try:
+        # Download videos from S3
+        local_video_path = download_from_s3(video_key)
+        print("Downloaded video files:", local_video_path)
+
+        # Call your detection function
+        print("local_video_path:", local_video_path)
+        metadata = get_detections([local_video_path]) # Replace with actual detection function call
+
+        # Send the metadata to the destination container
+        response = requests.post(DESTINATION_URL, json=metadata)
+        response.raise_for_status()
+
+    except Exception as e:
+        print(f"Error processing {video_key}: {e}")
+    finally:
+        if local_video_path:
+            try:
+                os.unlink(local_video_path)
+            except Exception as e:
+                print(f"Failed to delete temp file {local_video_path}: {e}")
+
 @app.route('/process-videos', methods=['POST'])
 def process_videos():
     data = request.get_json()
@@ -38,25 +63,9 @@ def process_videos():
     if not isinstance(video_key, str):
         return jsonify({'error': 'file name must be a string'}), 400
 
-    try:
-        # Download videos from S3
-        local_video_path = download_from_s3(video_key)
-        print("Downloaded video files:", local_video_path)
-
-        # Call your detection function
-        print("local_video_path:", local_video_path)
-        metadata = get_detections([local_video_path]) # Replace with actual detection function call
-        #print("Metadata:", metadata)
-
-        # Send the metadata to the destination container
-        response = requests.post(DESTINATION_URL, json=metadata)
-        response.raise_for_status()
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    finally:
-        try:
-            os.unlink(local_video_path)
-        except Exception as e:
-            print(f"Failed to delete temp file {local_video_path}: {e}")
-    return jsonify({'status': 'success'}), 200
+     # Start the processing in a separate process
+    process = multiprocessing.Process(target=process_video_task, args=(video_key,))
+    process.daemon = True
+    process.start()
+    
+    return jsonify({'status': 'processing started'}), 202

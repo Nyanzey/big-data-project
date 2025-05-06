@@ -25,3 +25,6 @@
 **/values.dev.yaml
 LICENSE
 README.md
+video_data.jsom
+schema.sql
+indice_invertido.db

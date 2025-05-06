@@ -1,22 +1,10 @@
 # Usa una imagen oficial de Node.js como base
-FROM node:20
-
+FROM nginx:1.28.0-alpine@sha256:aed99734248e851764f1f2146835ecad42b5f994081fa6631cc5d79240891ec9
 # Configura el directorio de trabajo en el contenedor
 WORKDIR /app
 
-# Copia los archivos de tu proyecto al contenedor
-# Es mejor copiar package.json primero para aprovechar el caché de Docker
-COPY package*.json ./
-RUN npm install
-
-# Copia el resto de los archivos
 COPY . .
 
-# ¡¡QUITAMOS ESTA LÍNEA!! -> RUN npm run build
+COPY ./nginx.conf /etc/nginx/nginx.conf
 
-# Expone el puerto REAL en el que Vite sirve la app por defecto
-EXPOSE 5173
-
-# Comando para iniciar la app en modo desarrollo, escuchando en todas las interfaces
-# El '--' es para pasar argumentos directamente a vite, no a npm
-CMD ["npm", "run", "dev", "--", "--host"]
+EXPOSE 80

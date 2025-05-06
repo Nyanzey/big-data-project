@@ -20,14 +20,33 @@ cursor.executescript("""
         tokenize='unicode61'
     );
     
-    CREATE TRIGGER indice_invertido_insert IF NOT EXISTS
-    AFTER INSERT ON indice_invertido BEGIN
-        INSERT INTO indice_invertido_fts(objeto) VALUES (new.objeto);
+    -- Trigger para INSERT
+    CREATE TRIGGER IF NOT EXISTS indice_invertido_insert
+    AFTER INSERT ON indice_invertido
+    BEGIN
+        INSERT INTO indice_invertido_fts(rowid, objeto)
+        VALUES (new.rowid, new.objeto);
+    END;
+
+    -- Trigger para UPDATE
+    CREATE TRIGGER IF NOT EXISTS indice_invertido_update
+    AFTER UPDATE ON indice_invertido
+    BEGIN
+        UPDATE indice_invertido_fts
+        SET objeto = new.objeto
+        WHERE rowid = old.rowid;
+    END;
+
+    -- Trigger para DELETE
+    CREATE TRIGGER IF NOT EXISTS indice_invertido_delete
+    AFTER DELETE ON indice_invertido
+    BEGIN
+        DELETE FROM indice_invertido_fts
+        WHERE rowid = old.rowid;
     END;
 """)
 
 def process_yolo_data(yolo_data):
-    yolo_data = json.loads(yolo_data)
     data = []
     for video in yolo_data['videos']:
         video_name = video['video_name']
@@ -53,7 +72,6 @@ def query_data(query):
         INNER JOIN indice_invertido i ON i.rowid = fts.rowid
         WHERE indice_invertido_fts MATCH ?
         GROUP BY i.video
-        ORDER BY rank
     """, (query,))
     return cursor.fetchall()
  
@@ -69,9 +87,12 @@ def prepare_db_result(db_result):
 @app.get("/")
 def app_get():
     query = request.args.get('query')
+    if not query:
+        return {'status': 'error', 'message': 'query is empty'}, 400
     return prepare_db_result(query_data(query))
 
-@app.post("/")
+@app.post("/receive_metadata")
 def app_post():
     data = request.get_json(force=True)
     insert_data(process_yolo_data(data))
+    return {"status": "success"}

@@ -44,11 +44,10 @@ function VideoDetails() {
     <video
     key={id}
   className="w-full aspect-video"
-  src={url}
   preload="auto"
+  controls
   >
-
-  Tu navegador no soporta la etiqueta de video HTML5.
+    <source src={url} type="video/mp4" />
   </video>
   </div>
 

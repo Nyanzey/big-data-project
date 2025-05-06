@@ -16,10 +16,11 @@ function VideoList({ videos: initialVideos }) {
             setError(null);
             try {
                 // 1. Obtener la lista de CLAVES de video desde S3
-                const videoKeys = await listFilesFromS3();
+                //const videoKeys = await listFilesFromS3();
+                //console.log(videoKeys);
 
                 // 2. Generar una URL prefirmada para CADA clave
-                const s3VideoDataPromises = videoKeys.map(async (key) => {
+                const s3VideoDataPromises = initialVideos.map(async (key) => {
                     try {
                         const presignedUrl = await generatePresignedUrlForKey(key);
                         // Crear el objeto de video con la URL
@@ -43,14 +44,14 @@ function VideoList({ videos: initialVideos }) {
                 const resolvedS3VideoData = (await Promise.all(s3VideoDataPromises))
                 .filter(video => video !== null); // Filtrar los nulos (errores)
 
-    // 3. Actualizar el estado con los nuevos videos (evitando duplicados)
-    setVideos((prevVideos) => {
-        const existingS3Ids = new Set(prevVideos.filter(v => v.source === 's3').map(v => v.id));
-        // Añadir solo los videos de S3 que no estaban ya en el estado
-        const uniqueNewS3Videos = resolvedS3VideoData.filter(sv => !existingS3Ids.has(sv.id));
-        // Combina videos iniciales/existentes con los nuevos únicos de S3
-        return [...prevVideos, ...uniqueNewS3Videos];
-    });
+                // 3. Actualizar el estado con los nuevos videos (evitando duplicados)
+                setVideos((prevVideos) => {
+                    const existingS3Ids = new Set(prevVideos.filter(v => v.source === 's3').map(v => v.id));
+                    // Añadir solo los videos de S3 que no estaban ya en el estado
+                    const uniqueNewS3Videos = resolvedS3VideoData.filter(sv => !existingS3Ids.has(sv.id));
+                    // Combina videos iniciales/existentes con los nuevos únicos de S3
+                    return [...prevVideos, ...uniqueNewS3Videos];
+                });
 
             } catch (fetchError) {
                 console.error("Error al cargar la lista de videos de S3:", fetchError);

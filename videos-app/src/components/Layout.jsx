@@ -21,7 +21,7 @@ function Layout({ children }) {
         {children}
         </main>
 
-        <Footer />
+        {/* <Footer /> *}
 
         {/* Si el modal está abierto, lo renderizamos */}
         {isModalOpen && <UploadModal onClose={() => setIsModalOpen(false)} />}

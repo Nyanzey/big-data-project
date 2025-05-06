@@ -1,14 +1,15 @@
 import { useState } from "react";
 import VideoList from "../components/VideoList";
 import UploadModal from "../components/UploadModal"; // <--- Importar el modal
+import { fetchFromInvertedIndex } from "../services/api";
 
-const INITIAL_VIDEOS = [
-];
+const INITIAL_VIDEOS = [];
 
 function Home() {
   const [videos, setVideos] = useState(INITIAL_VIDEOS);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
 
   const handleAddVideoClick = () => {
     setIsModalOpen(true);
@@ -23,6 +24,21 @@ function Home() {
   const filteredVideos = videos.filter((video) =>
   video.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const getVideosFromSearchTerm = async () => {
+    if (!searchTerm || searchTerm.length === 0) {
+      return;
+    }
+    setIsButtonLoading(true);
+    console.log("Search query: " + searchTerm);
+    try {
+      const response = await fetchFromInvertedIndex(searchTerm)
+      setVideos(response);
+    } catch (error) {
+      console.error(`Error fetching data: ${error}`);
+    }
+    setIsButtonLoading(false);
+  };
 
   return (
     <>
@@ -39,6 +55,15 @@ function Home() {
     onChange={(e) => setSearchTerm(e.target.value)}
     className="w-full max-w-lg p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
     />
+    <button
+     onClick={getVideosFromSearchTerm}
+     className={!isButtonLoading ?
+      "ms-6 inline-block px-5 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" :
+      "ms-6 inline-block px-5 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 animate-spin"
+     }
+     disabled={isButtonLoading}>
+      Buscar
+     </button>
     </div>
 
     <div className="w-full max-w-5xl mx-auto">
