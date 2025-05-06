@@ -5,5 +5,5 @@ vids/
 testenv/
 myenv/
 videos/
-videos-app/env
+videos-app/.env
 s3access_accessKeys.csv
