@@ -1,11 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: inverted-index-service
+   name: inverted-index-service
 spec:
-  selector:
-    app: inverted-index
-  ports:
-    - port: 5002
-      targetPort: 5002
-  type: ClusterIP
+   selector:
+     app: inverted-index
+   ports:
+     - port: 5002
+       targetPort: 5002
+       nodePort: 30003
+   type: NodePort

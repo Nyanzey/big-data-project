@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-router
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-router
+  template:
+    metadata:
+      labels:
+        app: flask-router
+    spec:
+      containers:
+        - name: flask-router
+          image: nyanzey/router:latest
+          ports:
+            - containerPort: 5005
