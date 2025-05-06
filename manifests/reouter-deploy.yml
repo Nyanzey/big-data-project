@@ -17,3 +17,6 @@ spec:
           image: nyanzey/router:latest
           ports:
             - containerPort: 5005
+          env:
+            - name: PROCESSOR_URL
+              value: "http://processor-service:5001"

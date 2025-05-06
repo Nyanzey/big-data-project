@@ -6,3 +6,4 @@ testenv/
 myenv/
 videos/
 videos-app/env
+s3access_accessKeys.csv
