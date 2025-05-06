@@ -1,9 +1,11 @@
 input/
 models/
-__pycache__/
 vids/
 testenv/
 myenv/
 videos/
 videos-app/.env
 s3access_accessKeys.csv
+**/.venv
+**/__pycache__
+**/.vscode
