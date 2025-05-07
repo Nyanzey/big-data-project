@@ -21,9 +21,9 @@ function Home() {
   };
 
   // Filtrar videos por título
-  const filteredVideos = videos.filter((video) =>
+  /* const filteredVideos = videos.filter((video) =>
   video.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ); */
 
   const getVideosFromSearchTerm = async () => {
     if (!searchTerm || searchTerm.length === 0) {
@@ -33,6 +33,7 @@ function Home() {
     console.log("Search query: " + searchTerm);
     try {
       const response = await fetchFromInvertedIndex(searchTerm)
+      console.log("Home:", response)
       setVideos(response);
     } catch (error) {
       console.error(`Error fetching data: ${error}`);
@@ -67,7 +68,7 @@ function Home() {
     </div>
 
     <div className="w-full max-w-5xl mx-auto">
-    <VideoList videos={filteredVideos} />
+    <VideoList initialVideos={videos} />
     </div>
 
     {/* Botón para añadir video */}

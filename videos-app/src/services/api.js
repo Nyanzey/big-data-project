@@ -4,14 +4,9 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const S3_BUCKET_NAME = import.meta.env.VITE_S3_BUCKET_NAME;
 const REGION = import.meta.env.VITE_AWS_REGION;
-<<<<<<< Updated upstream
-const BASE_PROCESSING_URL = import.meta.env.VITE_BASE_PROCESSING_URL;
-const BASE_INDEX_URL = import.meta.env.VITE_BASE_INDEX_URL;
-=======
 const BASE_URL = ''; //import.meta.env.VITE_BASE_URL;
 
 console.log(S3_BUCKET_NAME, REGION, BASE_URL);
->>>>>>> Stashed changes
 
 const s3 = new S3Client({
     region: REGION,
@@ -21,13 +16,8 @@ const s3 = new S3Client({
     },
 });
 
-<<<<<<< Updated upstream
-const API_URL = `${BASE_PROCESSING_URL}/process-videos`;
-const INVERTED_INDEX_URL = `${BASE_INDEX_URL}/`;
-=======
 const API_URL = `${BASE_URL}/api/ai/process-videos`;
 const INVERTED_INDEX_URL = `${BASE_URL}/api/index/`;
->>>>>>> Stashed changes
 
 const fetchFromProcessor = async (videoTitle, videoFileName) => {
     try {
@@ -38,7 +28,7 @@ const fetchFromProcessor = async (videoTitle, videoFileName) => {
             },
             body: JSON.stringify({
                 title: videoTitle,
-                fileName: videoFileName,
+                fileName: 'videos/' + videoFileName,
             }),
         });
 
@@ -62,7 +52,10 @@ const fetchFromInvertedIndex = async (query) => {
         if (!response.ok) {
             throw new Error(`Error en la comunicación con el servicio Inverted Index: ${response.status}`);
         }
-        return await response.json();
+        const data = await response.json();
+        console.log('InvertedIndex:', response)
+        console.log('InvertedIndex:', data)
+        return data;
     } catch (error) {
         console.error(error);
         throw error;
@@ -129,7 +122,6 @@ const uploadToS3 = async (file, fileName) => {
     console.log('Tamaño del archivo (file.size):', file.size);
 
     console.log(file.type);
-
 
     try {
         const arrayBuffer = await file.arrayBuffer();

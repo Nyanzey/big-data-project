@@ -4,10 +4,11 @@ import { fetchFromProcessor, uploadToS3 } from '../services/api';
 function UploadModal({ isOpen, onClose, onUpload }) {
     const [videoTitle, setVideoTitle] = useState('');
     const [videoFile, setVideoFile] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        setIsLoading(true);
         if (videoTitle && videoFile) {
             try {
                 const fileName = videoFile.name;
@@ -34,6 +35,7 @@ function UploadModal({ isOpen, onClose, onUpload }) {
         } else {
             alert("Por favor, ingresa el título y selecciona un archivo de video.");
         }
+        setIsLoading(false);
     };
 
     if (!isOpen) return null;
@@ -75,7 +77,10 @@ function UploadModal({ isOpen, onClose, onUpload }) {
         </button>
         <button
         type="submit"
-        className="ml-4 bg-blue-600 text-white px-6 py-3 rounded-lg transition-all duration-300 hover:bg-blue-700 focus:outline-none"
+        className={!isLoading ? 
+            "ml-4 bg-blue-600 text-white px-6 py-3 rounded-lg transition-all duration-300 hover:bg-blue-700 focus:outline-none" :
+            "ml-4 bg-blue-600 text-white px-6 py-3 rounded-lg transition-all duration-300 hover:bg-blue-700 focus:outline-none animate-spin"}
+        disabled={isLoading}
         >
         Subir
         </button>

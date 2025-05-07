@@ -76,11 +76,11 @@ def query_data(query):
     return cursor.fetchall()
  
 def prepare_db_result(db_result):
-    result = {'results': []}
+    result = []
     for video, seconds in db_result:
-        result['results'].append({
-            'video_name': video,
-            'seconds': list(map(int, seconds.split(',')))
+        result.append({
+            'videoName': video,
+            'seconds': sorted(set(map(int, seconds.split(','))))
         })
     return result
 
