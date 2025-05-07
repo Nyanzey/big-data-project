@@ -38,7 +38,7 @@ def process_video_task(video_key):
 
         # Call your detection function
         print("local_video_path:", local_video_path)
-        metadata = get_detections([local_video_path]) # Replace with actual detection function call
+        metadata = get_detections([local_video_path], [video_key]) # Replace with actual detection function call
 
         # Send the metadata to the destination container
         response = requests.post(DESTINATION_URL, json=metadata)

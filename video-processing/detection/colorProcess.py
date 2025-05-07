@@ -163,17 +163,3 @@ def process_videos_with_colors(data, object_labels, top_n_colors=3):
                     colors = analyze_colors_in_bboxes(video_path, frame_num, bbox, top_n=top_n_colors)
                     detection["colors"] = colors
 
-"""
-# Sample usage
-object_labels_to_process = ["person"]
-
-with open("video_data_yolo.json") as f:
-    data = json.load(f)
-
-processed_data = process_videos_with_colors(data, object_labels_to_process, top_n_colors=5)
-
-# Save the updated JSON structure to a file
-with open("final_detection_data.json", "w") as f:
-    json.dump(processed_data, f, indent=4)
-
-"""
