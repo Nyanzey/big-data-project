@@ -14,9 +14,9 @@ spec:
     spec:
       containers:
         - name: webui
-          image: marcoguillen/videos-app
+          image: simondice16/videos-app:latest
           ports:
-            - containerPort: 5137
+            - containerPort: 30001
           env:
             - name: AWS_REGION
               value: "us-east-1"
@@ -29,4 +29,4 @@ spec:
             - name: PROCESSOR_SERVICE_HOST
               value: "processor-service"
             - name: PROCESSOR_SERVICE_PORT
-              value: "5000"
+              value: "5001"
