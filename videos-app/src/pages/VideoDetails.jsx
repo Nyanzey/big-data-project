@@ -72,14 +72,14 @@ function VideoDetails() {
   <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-gray-900 break-words">
   {title || "Video sin título"}
   </h1>
-  <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
+  <p className="text-base sm:text-lg text-gray-700 leading-relaxed break-words">
   {description || "No hay descripción disponible."}
   </p>
-  <div className="text-base sm:text-lg text-gray-700 leading-relaxed">
+  <p className="text-base sm:text-lg text-gray-700 leading-relaxed break-words">
     {seconds.map((seg) => (
       <a href="#" onClick={(e) => handleTimestamp(e, seg)} className="pe-2 text-blue-500 hover:underline">{formatTime(seg)}</a>
     ))}
-  </div>
+  </p>
   <button
   onClick={() => navigate(-1)}
   className="mt-6 inline-block px-5 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
