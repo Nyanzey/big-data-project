@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: video-processor
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: video-processor
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: video-processor
-          image: nyanzey/procdummy:latest
+          image: nyanzey/video-process:latest
           ports:
             - containerPort: 5001
           env:

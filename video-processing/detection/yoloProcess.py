@@ -8,12 +8,12 @@ import detection.sampleFrames as sampler
 # Load the YOLO model
 model = YOLO("./models/yolo11x.pt")  # Replace with the path to your YOLO model if custom
 
-def process_video(video_path, output_data, frame_indices):
+def process_video(video_path, remote_path, output_data, frame_indices):
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
 
     video_data = {
-        "video_name": os.path.basename(video_path),
+        "video_name": remote_path.split("/")[-1],
         "video_path": video_path,
         "frames": []
     }
