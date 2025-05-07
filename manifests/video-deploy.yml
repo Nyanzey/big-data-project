@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: video-processor
-          image: nyanzey/detect:latest
+          image: nyanzey/video-process:latest
           ports:
             - containerPort: 5001
           env:
