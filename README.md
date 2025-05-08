@@ -121,9 +121,3 @@ You should now see the application's user interface.
   * The cluster has healthy nodes and no pending pods.
 
 ---
-
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
-
-```
