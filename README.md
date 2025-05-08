@@ -1,123 +1,129 @@
-# 🚀 Deploying Your Full Stack App on AWS EKS
+# Kubernetes EKS Surveillance Project
 
-This guide walks you through configuring your EKS cluster and deploying all services, including your frontend (WebUI).
+This project demonstrates a Kubernetes-based video surveillance system running on an AWS EKS cluster. The application includes a user interface exposed via a NodePort service, enabling access from a public IP.
+
+## Prerequisites
+
+Before getting started, ensure you have the following installed and configured:
+
+- AWS CLI
+- `eksctl`
+- `kubectl`
+- AWS account with permissions to create EKS clusters and EC2 instances
+- Git
 
 ---
 
-## ✅ 1. Get the `kubeconfig` for Your EKS Cluster
+## Steps to Deploy the Project
 
-This command sets up your local `kubectl` to connect to the cluster named `surv-2`.
+### 1. Create an AWS EKS Cluster (Auto Mode)
+
+To simplify the process, we use `eksctl` to automatically provision the EKS cluster and its worker nodes.
+
+Run the following command:
 
 ```bash
-aws eks update-kubeconfig --name surv-2
-```
+eksctl create cluster --name surveillance-cluster --region us-east-1 --nodes 2 --managed
+````
 
-* This pulls down your cluster’s kubeconfig.
-* You must have the correct AWS credentials (`aws configure`) for the account that owns the cluster.
+* Replace `surveillance-cluster` with a name of your choice.
+* Adjust `--region` and `--nodes` as needed.
+* This process takes around 10–15 minutes and will configure your `kubectl` context automatically.
+
+> **Note:** Make sure your AWS CLI is configured using `aws configure` before running the above command.
 
 ---
 
-## 📦 2. Deploy Core Backend Services
+### 2. Clone This Repository
 
-You need to deploy **video-processor**, **index**, and **router** services to the cluster.
-
-> 🗂 These should be defined in Kubernetes manifests (`.yaml` files) for deployments and services.
+Clone the project to your local machine:
 
 ```bash
-kubectl apply -f manifests/video-deploy.yaml
-kubectl apply -f manifests/index-deploy.yaml
-kubectl apply -f manifests/router-deploy.yaml
+git clone https://github.com/your-username/surveillance-project.git
+cd surveillance-project
 ```
 
----
-
-## 🔒 3. Check Security Groups
-
-Ensure your EKS worker nodes' security group allows **inbound traffic** to necessary ports (usually 80/443 or custom app ports like 30002, 30003).
-
-* Go to **EC2 > Security Groups** in AWS Console.
-* Find the security group attached to the EKS nodes.
-* Add an inbound rule like:
-
-| Type       | Protocol | Port Range  | Source                       |
-| ---------- | -------- | ----------- | ---------------------------- |
-| Custom TCP | TCP      | 30000-32767 | 0.0.0.0/0 (or your IP range) |
-
-> This is needed because EKS NodePorts expose services on high ports by default.
+> Replace the URL with the actual repository URL if different.
 
 ---
 
-## 🌐 4. Get NodePort IPs
+### 3. Deploy the Kubernetes Manifests
 
-Use this command to get the **external IP** and **port** for your services:
+Apply the provided manifests to the cluster:
 
 ```bash
-kubectl get svc
+kubectl apply -f manifests/
 ```
 
-Example output:
-
-```
-NAME               TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)           AGE
-index-service      NodePort   10.0.1.34       <none>        30003:30003/TCP   2m
-router-service     NodePort   10.0.1.56       <none>        30002:30002/TCP   2m
-```
-
-* Find the IP of any worker node (`kubectl get nodes -o wide`) and use it along with the exposed port.
-* Example:
-
-  * `http://<node-ip>:30002` → for `BASE_PROCESSING_URL`
-  * `http://<node-ip>:30003` → for `BASE_INDEX_URL`
+This will deploy the application components including the NodePort UI service.
 
 ---
 
-## 📝 5. Update `.env` File for WebUI
+### 4. Identify the Node Running the UI Service
 
-Update your WebUI `.env` file with correct URLs and AWS config:
+Get the name of the UI service pod:
 
-```dotenv
-VITE_AWS_ACCESS_KEY_ID=your-access-key
-VITE_AWS_SECRET_ACCESS_KEY=your-secret-key
-VITE_AWS_REGION=us-east-1
-VITE_S3_BUCKET_NAME=surv-cloud-videos
-VITE_BASE_PROCESSING_URL=http://<node-ip>:30002
-VITE_BASE_INDEX_URL=http://<node-ip>:30003
+```bash
+kubectl get pods -o wide
 ```
 
-Make sure there are **no spaces** around the `=` signs.
+Find the pod for the UI (it may have "ui" in its name), then note the `NODE` column — this is the EC2 instance hosting the pod.
+
+Next, find the public IP of that instance:
+
+```bash
+kubectl get nodes -o wide
+```
+
+The `EXTERNAL-IP` column corresponds to the public IP of each node.
 
 ---
 
-## 🛠 6. Build and Push WebUI Docker Image
+### 5. Modify the EC2 Instance's Inbound Rules
 
-Assuming you have a `Dockerfile` in the WebUI directory:
+Go to the AWS EC2 Console:
 
-```bash
-# Build the Docker image
-docker build -t your-dockerhub-user/webui:latest .
+1. Find the instance corresponding to the node running the UI.
+2. Click on the instance and navigate to its **Security Group**.
+3. Edit **Inbound Rules**:
 
-# Log in to Docker Hub
-docker login
+   * Add a new rule:
 
-# Push the image
-docker push your-dockerhub-user/webui:latest
-```
+     * **Type**: Custom TCP
+     * **Port Range**: `30001`
+     * **Source**: `0.0.0.0/0` (or restrict as needed)
+
+This allows access to the NodePort from the internet.
 
 ---
 
-## 🚢 7. Deploy WebUI to EKS
+### 6. Access the UI in Your Browser
 
-Create a Kubernetes deployment and service for WebUI:
+Once the security rules are updated, open your browser and go to:
 
-```bash
-kubectl apply -f k8s/webui-deployment.yaml
-kubectl apply -f k8s/webui-service.yaml
+```
+http://<public-ip>:30001
 ```
 
-Make sure the service type is `NodePort` (or `LoadBalancer` if you’re using an ELB).
+Replace `<public-ip>` with the public IP of the EC2 instance running the UI pod.
 
-Now access your WebUI at:
+You should now see the application's user interface.
 
-```bash
-http://<node-ip>:30001
+---
+
+## Troubleshooting
+
+* If the UI is not accessible, ensure:
+
+  * The pod is running and assigned to a node.
+  * The NodePort (`30001`) is correct and matches the service definition.
+  * The security group allows traffic on port 30001.
+  * The cluster has healthy nodes and no pending pods.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
+
 ```
