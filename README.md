@@ -39,8 +39,8 @@ eksctl create cluster --name surveillance-cluster --region us-east-1 --nodes 2 -
 Clone the project to your local machine:
 
 ```bash
-git clone https://github.com/your-username/surveillance-project.git
-cd surveillance-project
+git clone https://github.com/Nyanzey/big-data-project.git
+cd big-data-project
 ```
 
 > Replace the URL with the actual repository URL if different.
