@@ -4,7 +4,7 @@ This project implements a distributed video surveillance system deployed on an *
 The system includes three main modules—**WebUI**, **Video Preprocessing**, and **Inverted Index**—all running as Kubernetes workloads.
 The WebUI is exposed via a **NodePort service**, making the interface accessible from a node’s public IP.
 
-### Créditos
+### Credits
 
 - Bruno Fernandez Gutierrez (bruno.fernandez@ucsp.edu.pe)
 - Joaquin Pino Zavala (joaquin.pino@ucsp.edu.pe)
