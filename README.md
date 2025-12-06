@@ -49,6 +49,10 @@ The project is composed of three modules:
    * Exposes a Flask API to serve search queries
    * Maps each object to the videos and timestamps where it appears
 
+### 2.2 Modules architecture diagram
+
+![Project diagram](/project.png "Project Diagram")
+
 ---
 
 ### 2.2 Deployment Environment
